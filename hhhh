@@ -86,7 +86,7 @@ toggleButton.MouseButton1Click:Connect(function()
 end)
 
 -- Tạo các tab
-local tanhhTab = Window:AddTab({ Title = "Thông Tin", Icon = "" })
+local tanhTab = Window:AddTab({ Title = "Thông Tin", Icon = "" })
 local ChestTab = Window:AddTab({ Title = "Script Fam Chest", Icon = "" })
 local OtherTab = Window:AddTab({ Title = "Khác", Icon = "" })
 local FruitTab = Window:AddTab({ Title = "Fruit", Icon = "" }) -- Tab Fruit mới
@@ -156,7 +156,7 @@ local function teleportPlayerUp()
     end
 end
 
-TanhhTab:AddButton({
+TanhTab:AddButton({
     Title = "discord.gg/tEeQZXtEZv",
     Description = "Nhấn để copy link Discord",
     Callback = function()
@@ -168,7 +168,7 @@ TanhhTab:AddButton({
         })
     end
 })
-TanhhTab:AddButton({
+TanhTab:AddButton({
     Title = "Phở Bò:Tuấn Anh",
     Description = "Nhấn để copy link FaceBook",
     Callback = function()
@@ -180,7 +180,6 @@ TanhhTab:AddButton({
         })
     end
 })
-
 -- Find Fruit
 local fruitsESP = {}
 local findFruitEnabled = false
