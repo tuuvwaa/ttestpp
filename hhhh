@@ -25,9 +25,9 @@ screenGui.Parent = game.CoreGui
 
 -- Tạo nút (ImageButton)
 local toggleButton = Instance.new("ImageButton")
-toggleButton.Size = UDim2.new(0, 50, 0, 50) -- Kích thước nhỏ, hình vuông
-toggleButton.Position = UDim2.new(1, -60, 0, 10) -- Vị trí gần góc phải trên
-toggleButton.Image = "rbxassetid://112455697889846" -- Hình ảnh của nút
+toggleButton.Size = UDim2.new(0, 30, 0, 30) -- Kích thước nhỏ, hình vuông
+toggleButton.Position = UDim2.new(0, 10, 0, 10) -- Gần góc trái trên
+toggleButton.Image = "rbxassetid://136991235575173" -- Hình ảnh của nút
 toggleButton.BackgroundTransparency = 1 -- Không có nền
 toggleButton.Parent = screenGui
 
@@ -86,7 +86,8 @@ toggleButton.MouseButton1Click:Connect(function()
 end)
 
 -- Tạo các tab
-local MainTab = Window:AddTab({ Title = "Script Fam Chest", Icon = "" })
+local tanhhTab = Window:AddTab({ Title = "Thông Tin", Icon = "" })
+local ChestTab = Window:AddTab({ Title = "Script Fam Chest", Icon = "" })
 local OtherTab = Window:AddTab({ Title = "Khác", Icon = "" })
 local FruitTab = Window:AddTab({ Title = "Fruit", Icon = "" }) -- Tab Fruit mới
 
@@ -155,190 +156,30 @@ local function teleportPlayerUp()
     end
 end
 
-local function checkHealth()
-    while antiDieEnabled do
-        local character = LocalPlayer.Character
-        if character and character:FindFirstChild("Humanoid") then
-            local humanoid = character.Humanoid
-            if humanoid.Health == 0 then
-                teleporting = false
-            elseif humanoid.Health <= (humanoid.MaxHealth * 0.3) then
-                if not teleporting then
-                    teleporting = true
-                    originalPosition = character.HumanoidRootPart.Position -- Lưu vị trí cũ
-                    teleportPlayerUp() -- Bắt đầu teleport lên trời
-                end
-            else
-                if teleporting then
-                    if originalPosition then
-                        local hrp = character:FindFirstChild("HumanoidRootPart")
-                        if hrp then
-                            hrp.CFrame = CFrame.new(originalPosition)
-                        end
-                        originalPosition = nil
-                    end
-                    teleporting = false -- Dừng teleport nếu HP > 30%
-                end
-            end
-        end
-        task.wait(0.1) -- Kiểm tra HP mỗi 0.1 giây
+TanhhTab:AddButton({
+    Title = "discord.gg/tEeQZXtEZv",
+    Description = "Nhấn để copy link Discord",
+    Callback = function()
+        setclipboard("https://discord.gg/tEeQZXtEZv")
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "Thông báo",
+            Text = "Đã sao chép link Discord!",
+            Duration = 3
+        })
     end
-end
-
--- Hàm DashNoCD
-_G.DodgewithoutCool = false
-local dashNoCDEnabled = false
-local function NoCooldown()
-    if _G.DodgewithoutCool then
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait() -- Chờ nhân vật được load.
-
-        -- Đảm bảo chờ 1 giây sau khi respawn
-        wait(3)
-
-        for i, v in next, getgc() do
-            if typeof(v) == "function" then
-                if getfenv(v).script == character:WaitForChild("Dodge") then
-                    for i2, v2 in next, getupvalues(v) do
-                        if tostring(v2) == "0.4" then -- Giá trị cooldown gốc.
-                            repeat
-                                wait(0.1) -- Kiểm tra cooldown liên tục.
-                                setupvalue(v, i2, 0) -- Đặt cooldown thành 0.
-                            until not _G.DodgewithoutCool
-                        end
-                    end
-                end
-            end
-        end
+})
+TanhhTab:AddButton({
+    Title = "Phở Bò:Tuấn Anh",
+    Description = "Nhấn để copy link FaceBook",
+    Callback = function()
+        setclipboard("https://www.facebook.com/tuanangg10")
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "Thông báo",
+            Text = "Đã sao chép link FaceBook!",
+            Duration = 3
+        })
     end
-end
-
--- Hàm WalkSpeed
-local hb = game:GetService("RunService").Heartbeat
-local speaker = game:GetService("Players").LocalPlayer
-local tpwalking = false
-local currentSpeed = 90  -- Mặc định ban đầu là 90
-local walkSpeedEnabled = false
-local function startTeleportWalk(character)
-    local hum = character:WaitForChild("Humanoid")
-
-    -- Lắng nghe sự kiện thay đổi máu
-    hum.HealthChanged:Connect(function(health)
-        local maxHealth = hum.MaxHealth
-        local hpPercent = (health / maxHealth) * 100
-        if hpPercent <= 30 then
-            currentSpeed = 190
-        elseif hpPercent >= 50 then
-            currentSpeed = 90
-        end
-        -- Nếu muốn có thêm logic cho mức 30%-50% thì thêm vào đây
-    end)
-
-    while tpwalking and hum and hum.Parent do
-        local delta = hb:Wait()
-        if hum.MoveDirection.Magnitude > 0 then
-            character:TranslateBy(hum.MoveDirection * currentSpeed * delta)
-        end
-    end
-end
-
--- Lắng nghe sự kiện nhân vật tái sinh
-speaker.CharacterAdded:Connect(function(character)
-    if tpwalking then
-        startTeleportWalk(character)
-    end
-end)
-
--- Nếu nhân vật đã tồn tại, chạy ngay lập tức
-if speaker.Character and tpwalking then
-    startTeleportWalk(speaker.Character)
-end
-
--- Hàm Gas
-local Players = game:GetService("Players")
-local StarterGui = game:GetService("StarterGui")
-
-local player = Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-local toggleNoCooldown = false
-local gasEnabled = false
-
--- Hàm hiển thị thông báo
-local function notify(title, text)
-    StarterGui:SetCore("SendNotification", {
-        Title = title;
-        Text = text;
-        Duration = 3; -- Thời gian hiển thị thông báo
-    })
-end
-
--- Hàm tạo Tool và cài đặt toggle
-local function createNoCooldownTool()
-    local backpack = player:FindFirstChild("Backpack")
-    if not backpack then
-        return
-    end
-
-    -- Kiểm tra nếu Tool đã tồn tại, nếu có thì xóa trước
-    local oldTool = backpack:FindFirstChild("NoCooldownToggle")
-    if oldTool then
-        oldTool:Destroy()
-    end
-
-    -- Tạo Tool
-    local tool = Instance.new("Tool")
-    tool.Name = "NoCooldownToggle"
-    tool.RequiresHandle = false
-    tool.CanBeDropped = false
-    tool.Parent = backpack
-
-    -- Khi Tool được nhấn (Activated), bật/tắt tính năng NoCooldown
-    tool.Activated:Connect(function()
-        toggleNoCooldown = not toggleNoCooldown
-        if toggleNoCooldown then
-            notify("No Cooldown M1", "Enabled")
-        else
-            notify("No Cooldown M1", "Disabled")
-        end
-    end)
-end
-
--- Gọi hàm spawn để thực thi liên tục kiểm tra NoCooldown
-task.spawn(function()
-    while task.wait(0.1) do
-        if toggleNoCooldown then
-            local backpack = player:FindFirstChild("Backpack")
-            local character = player.Character
-            if not backpack or not character then
-                continue
-            end
-
-            local tool = backpack:FindFirstChild("Gas-Gas") or character:FindFirstChild("Gas-Gas")
-            if tool then
-                -- Nhấn chuột trái tấn công
-                local leftClickRemote = tool:FindFirstChild("LeftClickRemote")
-                if leftClickRemote then
-                    local hrp = character:FindFirstChild("HumanoidRootPart")
-                    local direction = hrp and hrp.CFrame.LookVector or Vector3.new(0, 0, -1)
-                    local args = {
-                        [1] = direction, -- Hướng phía trước
-                        [2] = 4         -- Sức mạnh hoặc tầm đánh
-                    }
-                    leftClickRemote:FireServer(unpack(args))
-                end
-
-                -- Gửi sự kiện tắt cooldown
-                local remoteEvent = tool:FindFirstChild("RemoteEvent")
-                if remoteEvent then
-                    local args = {
-                        [1] = false -- Vô hiệu hóa cooldown
-                    }
-                    remoteEvent:FireServer(unpack(args))
-                end
-            end
-        end
-    end
-end)
+})
 
 -- Find Fruit
 local fruitsESP = {}
